@@ -19,7 +19,7 @@ public class AccountResponse {
     private String email;
     private String phone;
     private AccountType accountType;
-    private AccountStatus accountStatus;
+    private AccountStatus status;
     private BigDecimal balance;
     private BigDecimal dailyTransactionLimit;
     private LocalDateTime createdAt;
