@@ -79,4 +79,11 @@ public class AccountService {
 
         return mapToResponse(account);
     }
+
+    public BigDecimal getBalance(String accountNumber) {
+        Account account = accountRepository.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new RuntimeException("Account number " + accountNumber + " not found"));
+
+        return account.getBalance();
+    }
 }

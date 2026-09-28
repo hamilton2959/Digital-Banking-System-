@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+
 @RestController
 @RequestMapping("/api/v1/accounts")
 @RequiredArgsConstructor
@@ -26,5 +28,10 @@ public class AccountController {
     @GetMapping("/{accountNumber}")
     public ResponseEntity<AccountResponse> getAccount(@PathVariable String accountNumber) {
         return ResponseEntity.ok(accountService.getAccount(accountNumber));
+    }
+
+    @GetMapping("/{accountNumber}/balance")
+    public ResponseEntity<BigDecimal> getBalance(@PathVariable String accountNumber) {
+        return ResponseEntity.ok(accountService.getBalance(accountNumber));
     }
 }
