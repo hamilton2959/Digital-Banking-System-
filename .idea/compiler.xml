@@ -3,7 +3,7 @@
   <component name="CompilerConfiguration">
     <annotationProcessing>
       <profile default="true" name="Default" enabled="true" />
-      <profile name="Annotation profile for transaction-service" enabled="true">
+      <profile name="Annotation profile for payment-service" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
@@ -13,6 +13,16 @@
         </processorPath>
         <module name="TransactionService" />
         <module name="AccountService" />
+        <module name="PaymentService" />
+      </profile>
+      <profile name="Annotation profile for fraud-detection-service" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.46/lombok-1.18.46.jar" />
+        </processorPath>
+        <module name="FraudDetectionService" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -23,6 +33,8 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="AccountService" options="-parameters" />
       <module name="ApiGateway" options="-parameters" />
+      <module name="FraudDetectionService" options="-parameters" />
+      <module name="PaymentService" options="-parameters" />
       <module name="TransactionService" options="-parameters" />
     </option>
   </component>
