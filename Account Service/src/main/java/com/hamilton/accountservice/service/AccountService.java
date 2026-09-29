@@ -86,4 +86,51 @@ public class AccountService {
 
         return account.getBalance();
     }
+
+    // Block Account = called by fraud detection service via Kafka
+    public void blockAccount(String accountNumber) {
+        log.info("Blocking account number {}", accountNumber);
+
+        Account account = accountRepository.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new RuntimeException("Account number " + accountNumber + " not found"));
+
+        account.setStatus(AccountStatus.BLOCKED);
+        accountRepository.save(account);
+        log.info("Account blocked with number {}", accountNumber);
+    }
+
+    //Deduct Balance from sender account
+    //called by transaction service
+    public void deductBalance(String accountNumber, BigDecimal amount) {
+        log.info("Deducting balance {} from account {}", amount, accountNumber);
+
+        Account account = accountRepository.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new RuntimeException("Account number " + accountNumber + " not found"));
+
+        if (account.getStatus() != AccountStatus.ACTIVE) {
+            throw new RuntimeException("Account status " + account.getStatus() + " is not active");
+        }
+
+        if (account.getBalance().compareTo(amount) < 0) {
+            throw new RuntimeException("Account balance " + amount + " is below 0");
+        }
+        account.setBalance(account.getBalance().subtract(amount));
+        accountRepository.save(account);
+
+        log.info("Balance updated: {}", account.getBalance());
+    }
+
+    //Credit balance
+    //called by transaction service via Kafka
+    public void creditBalance(String accountNumber, BigDecimal amount) {
+        log.info("Crediting {} to {}", amount, accountNumber);
+
+        Account account = accountRepository.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new RuntimeException("Account number " + accountNumber + " not found"));
+
+        account.setBalance(account.getBalance().add(amount));
+        accountRepository.save(account);
+
+        log.info("Balance credit: New Balance is {}", account.getBalance());
+    }
 }
