@@ -33,4 +33,10 @@ public class TransactionController {
     public ResponseEntity<List<TransactionResponse>> getTransactionHistory(@PathVariable String accountNumber){
         return ResponseEntity.ok(transactionService.getTransactionHistory(accountNumber));
     }
+
+    @PostMapping("/{transactionId}/verify")
+    public ResponseEntity<TransactionResponse> verifyOTP(@PathVariable String transactionId, @RequestParam String otp){
+        log.info("Verify OTP for transaction {}",transactionId);
+        return ResponseEntity.ok(transactionService.verifyOTP(transactionId, otp));
+    }
 }

@@ -3,13 +3,14 @@
   <component name="CompilerConfiguration">
     <annotationProcessing>
       <profile default="true" name="Default" enabled="true" />
-      <profile name="Annotation profile for transaction-service" enabled="true">
+      <profile name="Annotation profile for payment-service" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.46/lombok-1.18.46.jar" />
         </processorPath>
+        <module name="NotificationService" />
         <module name="TransactionService" />
         <module name="FraudDetectionService" />
         <module name="AccountService" />
@@ -25,6 +26,7 @@
       <module name="AccountService" options="-parameters" />
       <module name="ApiGateway" options="-parameters" />
       <module name="FraudDetectionService" options="-parameters" />
+      <module name="NotificationService" options="-parameters" />
       <module name="PaymentService" options="-parameters" />
       <module name="TransactionService" options="-parameters" />
     </option>
