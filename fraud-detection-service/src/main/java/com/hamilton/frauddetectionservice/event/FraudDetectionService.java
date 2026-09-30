@@ -27,10 +27,10 @@ public class FraudDetectionService {
     private int maxTransactionPerMinute;
 
     @Value("${fraud.suspicious-amount-multiplier}")
-    private int suspiciousAmountMultiplier;
+    private double suspiciousAmountMultiplier;
 
     @Value("${fraud.max-balance-percentage}")
-    private int maxBalancePercentage;
+    private double maxBalancePercentage;
 
     private static final String VERIFICATION_REQUIRED_TOPIC = "verification.required";
     private static final String FRAUD_CHECK_CLEAN_RESULT_TOPIC = "fraud.check.clean";

@@ -20,8 +20,8 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    private String bankOrderId;
-    private String bankPaymentId;
+    private String stripeOrderId;
+    private String stripePaymentId;
 
     @Column(nullable = false)
     private String accountNumber;
