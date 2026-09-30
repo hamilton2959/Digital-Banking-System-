@@ -70,7 +70,8 @@ public class PaymentService {
         // Save payment record
         Payment payment = new Payment();
         // Preserving logic: Storing Stripe PaymentIntent ID in the order field
-        payment.setRazorpayOrderId(paymentIntent.getId());
+        payment.setId(paymentIntent.getId());
+        //payment.setRazorpayOrderId(paymentIntent.getId());
         payment.setAccountNumber(request.getAccountNumber());
         payment.setAmount(request.getAmount());
         payment.setCurrency("USD");
@@ -107,10 +108,10 @@ public class PaymentService {
             String orderId = (String) paymentData.get("id"); // Stripe PaymentIntent ID
             String paymentId = (String) paymentData.get("id"); // In Stripe, PaymentIntent ID represents the payment session
 
-            Payment payment = paymentRepository.findByRazorpayOrderId(orderId)
+            Payment payment = paymentRepository.findByStripeOrderId(orderId)
                     .orElseThrow(() -> new RuntimeException("Payment Not Found for order: " + orderId));
 
-            payment.setRazorpayPaymentId(paymentId);
+            payment.setStripePaymentId(paymentId);
             payment.setStatus(PaymentStatus.COMPLETED);
             paymentRepository.save(payment);
 
@@ -133,7 +134,7 @@ public class PaymentService {
             Map<String, Object> paymentData = extractPaymentData(payload);
             String orderId = (String) paymentData.get("id");
 
-            Payment payment = paymentRepository.findByRazorpayOrderId(orderId)
+            Payment payment = paymentRepository.findByStripeOrderId(orderId)
                     .orElseThrow(() -> new RuntimeException("Payment Not Found for order: " + orderId));
 
             // Retaining original logic: updates to COMPLETED status on failure

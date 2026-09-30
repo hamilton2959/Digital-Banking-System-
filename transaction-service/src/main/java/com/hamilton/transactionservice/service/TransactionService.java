@@ -6,6 +6,7 @@ import com.hamilton.transactionservice.dto.TransferRequest;
 import com.hamilton.transactionservice.entity.Transaction;
 import com.hamilton.transactionservice.entity.TransactionStatus;
 import com.hamilton.transactionservice.entity.TransactionType;
+import com.hamilton.transactionservice.event.TransactionCompletedEvent;
 import com.hamilton.transactionservice.event.TransactionInitiatedEvent;
 import com.hamilton.transactionservice.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -28,6 +30,7 @@ public class TransactionService {
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
     private static final String TRANSACTION_INITIATED_TOPIC = "transaction.initiated";
+    private static final String TRANSACTION_COMPLETED_TOPIC = "transaction.completed";
 
     public TransactionResponse transfer(TransferRequest request){
         log.info("SAGA START - Transfer: {} -> {} Amount: {}",
@@ -92,5 +95,35 @@ public class TransactionService {
                 .stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
+    }
+
+    public void processCleanResult(String transactionId) {
+        Transaction transaction = transactionRepository.findById(transactionId)
+                .orElseThrow(() -> new RuntimeException("Transaction not found" + transactionId));
+
+        if (transaction.getStatus() != TransactionStatus.PROCESSING){
+            log.warn("Transaction {} not PROCESSING - skipping", transactionId);
+            return;
+        }
+
+        completeTransaction(transaction);
+    }
+
+    private void completeTransaction(Transaction transaction) {
+        transaction.setStatus(TransactionStatus.COMPLETED);
+        transaction.setCompletedAt(LocalDateTime.now());
+        transactionRepository.save(transaction);
+
+        TransactionCompletedEvent completedEvent = new TransactionCompletedEvent(
+                transaction.getId(),
+                transaction.getSenderAccountNumber(),
+                transaction.getReceiverAccountNumber(),
+                transaction.getAmount(),
+                transaction.getDescription()
+        );
+
+        kafkaTemplate.send(TRANSACTION_COMPLETED_TOPIC, transaction.getId(), completedEvent);
+
+        log.info("SAGA COMPLETED - {} completed", transaction.getId());
     }
 }
